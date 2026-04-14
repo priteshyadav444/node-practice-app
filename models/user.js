@@ -29,6 +29,8 @@ const User = sequelize.define(
         type: DataTypes.TINYINT,
         defaultValue: 0
     }
-})
+},
+    { tableName: 'users' }
+)
 
 export default User;

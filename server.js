@@ -13,8 +13,10 @@ app.use("/api/auth", authRoutes);
 
 try {
     await sequelize.authenticate();
-    console.log("DB Connection authenticated");
-
+    console.log("DB connected");
+    await sequelize.sync({alter: true});
+    console.log("DB synced");
+    
     app.listen(PORT, async () => {
         console.log(`Server running on : ${PORT}`);
     });
