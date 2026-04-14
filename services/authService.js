@@ -15,18 +15,18 @@ export const createUser = async (data) => {
 }
 
 export const login = async (data) => {
-    const existing = await User.findOne({ where: { email: data.email } });
-    if (!existing) throw new Error("Invalid credentials");
+    const user = await User.findOne({ where: { email: data.email } });
+    if (!user) throw new Error("Invalid credentials");
 
     const ok = await bcrypt.compare(data.password, user.password);
     if (!ok) throw new Error("Invalid cred");
 
     const payload = { id: user.id };
-    expireIn = JWT_EXPIRES_IN;
-    const token = jwt.sign(payload, JWT_SECRET, { expireIn });
+    const expiresIn = JWT_EXPIRES_IN;
+    const token = jwt.sign(payload, JWT_SECRET, {  expiresIn });
     const u = user.get({ plain: true});
     delete u.password;
-    return { user: u, token, expireIn };
+    return { user: u, token, expiresIn };
 }
 
 export const getUserById = async (id) => {
