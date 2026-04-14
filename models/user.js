@@ -18,7 +18,7 @@ const User = sequelize.define(
     },
     role: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
     },
     isActive: {
         type: DataTypes.BOOLEAN,

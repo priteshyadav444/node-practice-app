@@ -1,7 +1,9 @@
 import express from "express";
 import * as authController from "../controllers/authController.js";
-const router = express.Router();
+import { validate } from "../middleware/validate.js";
+import registerRules from "../middleware/validation/registerRules.js";
 
-router.post("/register", authController.register)
+const router = express.Router();
+router.post("/register", registerRules, validate, authController.register)
 
 export default router;

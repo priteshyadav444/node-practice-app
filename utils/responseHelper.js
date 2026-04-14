@@ -8,8 +8,12 @@ export const sendResponse = (res, message = "Request successfully", payload = nu
     res.status(status).json(response);
 };
 
-export const sendError = (res, message = "Bad Request", status = 400) => {
-    res.status(status).json({ success: false, message })
+export const sendError = (res, message = "Bad Request", status = 400, errorPayload = null) => {
+    let response = { success: false, message };
+    if (errorPayload) {
+        response = { ...response, errors: errorPayload.errors };
+    }
+    res.status(status).json(response)
 };
 
 
