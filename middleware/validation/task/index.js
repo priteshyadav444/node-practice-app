@@ -20,4 +20,23 @@ const updateTaskRule = [
     ...createTaskRule
 ];
 
-export { createTaskRule, updateTaskRule };
+const assignTaskRule = [
+    param("id").custom(async (value) => {
+        const task = await Task.findOne({ where: { id: value } });
+        if (!task) {
+            throw new Error("Invalid Task id");
+        }
+    }),
+    body("assignedTo").notEmpty().withMessage('AssignedTo must be a valid user ID'),
+];
+
+const getTaskById = [
+    param("id").custom(async (value) => {
+        const task = await Task.findOne({ where: { id: value } });
+        if (!task) {
+            throw new Error("Invalid Task id");
+        }
+    })
+];
+
+export { createTaskRule, updateTaskRule, assignTaskRule, getTaskById };

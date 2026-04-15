@@ -38,7 +38,7 @@ export const updateTask = async (req, res) => {
         const { id } = matchedData(req, { locations: ['params'] });
        
         const task = await taskService.updateTask(id, data);
-        return sendResponse(res, "Task updated successfully!", task)
+        return sendResponse(res, "Task Assign successfully!", task)
     } catch (error) {
         sendServerError(res, error);
     }

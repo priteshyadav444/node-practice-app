@@ -19,15 +19,15 @@ export const getTasks = async () => {
 
 export const updateTask = async (taskId, data) => {
     const task = await Task.update(data, { where: { id: taskId } });
-    if(!task){
+    if (!task) {
         throw new Error("Unable to update task");
     }
     return getTaskById(taskId);
 }
 
 export const deleteTask = async (taskId) => {
-    const isSuccess = await Task.destroy({ where: {id: taskId}});
-    if(!isSuccess){
+    const isSuccess = await Task.destroy({ where: { id: taskId } });
+    if (!isSuccess) {
         throw new Error("Unable to delete task", isSuccess);
     }
     return isSuccess;
