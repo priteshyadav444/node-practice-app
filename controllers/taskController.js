@@ -43,3 +43,13 @@ export const updateTask = async (req, res) => {
         sendServerError(res, error);
     }
 };
+
+export const deleteTask = async (req, res) => {
+    try {
+        const { id } = matchedData(req, { locations: ['params'] });
+        const task = await taskService.deleteTask(id);
+        return sendResponse(res, "Task deleted successfully!")
+    } catch (error) {
+        sendServerError(res, error);
+    }
+}

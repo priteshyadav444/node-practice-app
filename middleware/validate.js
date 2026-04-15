@@ -1,12 +1,12 @@
 import { validationResult } from "express-validator";
 import { sendError } from "../utils/responseHelper.js";
 
-export const validate = (req, res, next) => {
+export const validate = (includeErrors = true) => (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         const firstMessage = errors.array()[0].msg;
-        sendError(res, firstMessage, 422, errors);
-        return res.status(422).json()
+        let payload = includeErrors ? errors : null;
+        sendError(res, firstMessage, 422, payload);
     }
     next();
 }
