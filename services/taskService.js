@@ -16,3 +16,11 @@ export const getTasks = async () => {
     const tasks = await Task.findAll()
     return tasks;
 }
+
+export const updateTask = async (taskId, data) => {
+    const task = await Task.update(data, { where: { id: taskId } });
+    if(!task){
+        throw new Error("Unable to update task");
+    }
+    return getTaskById(taskId);
+}

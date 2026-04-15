@@ -1,4 +1,5 @@
-import { body } from "express-validator";
+import { body, param } from "express-validator";
+import { Task } from "../../../models/index.js";
 
 const createTaskRule = [
     body("title").notEmpty().withMessage('Task is required'),
@@ -9,4 +10,14 @@ const createTaskRule = [
     body("assignedTo").notEmpty().withMessage('AssignedTo must be a valid user ID'),
 ];
 
-export default createTaskRule;
+const updateTaskRule = [
+    param("id").custom(async (value) => {
+        const task = await Task.findOne({ where: { id: value } });
+        if (!task) {
+            throw new Error("Invalid Task id");
+        }
+    }),
+    ...createTaskRule
+];
+
+export { createTaskRule, updateTaskRule };

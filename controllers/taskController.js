@@ -5,9 +5,8 @@ import { matchedData } from "express-validator";
 export const createTask = async (req, res) => {
     try {
         const data = matchedData(req, { locations: ['body'] });
-        console.log(data);
         const task = await taskService.createTask(data);
-        return sendResponse(res, "Task successfully!", task)
+        return sendResponse(res, "Task created successfully!", task)
     } catch (error) {
         sendServerError(res, error);
     }
@@ -32,3 +31,15 @@ export const getTasks = async (req, res) => {
         sendServerError(res, error);
     }
 }
+
+export const updateTask = async (req, res) => {
+    try {
+        let data = matchedData(req, { locations: ['body'] });
+        const { id } = matchedData(req, { locations: ['params'] });
+       
+        const task = await taskService.updateTask(id, data);
+        return sendResponse(res, "Task updated successfully!", task)
+    } catch (error) {
+        sendServerError(res, error);
+    }
+};
