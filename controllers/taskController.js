@@ -12,3 +12,23 @@ export const createTask = async (req, res) => {
         sendServerError(res, error);
     }
 };
+
+
+export const getTaskById = async (req, res) => {
+    try {
+        const { id } = matchedData(req, { locations: ['params'] });
+        const task = await taskService.getTaskById(id);
+        return sendResponse(res, "Task fetched successfully!", task)
+    } catch (error) {
+        sendServerError(res, error);
+    }
+}
+
+export const getTasks = async (req, res) => {
+    try {
+        const tasks = await taskService.getTasks();
+        return sendResponse(res, "Task fetched successfully!", tasks)
+    } catch (error) {
+        sendServerError(res, error);
+    }
+}
