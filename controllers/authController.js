@@ -1,10 +1,11 @@
 import { sendResponse, sendServerError } from "../utils/responseHelper.js";
 import * as authService from "../services/authService.js";
-import { body, validationResult } from "express-validator";
+import { matchedData } from "express-validator";
 
 export const register = async (req, res) => {
     try {
-        const user = await authService.createUser(req.body);
+        const data = matchedData({ locations: 'body' });
+        const user = await authService.createUser(data);
         return sendResponse(res, "Registered successfully!", user)
     } catch (error) {
         sendServerError(res, error);

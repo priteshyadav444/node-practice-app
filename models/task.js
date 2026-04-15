@@ -11,13 +11,14 @@ const Task = sequelize.define(
         },
         title: {
             type: DataTypes.STRING,
-            allowNull: true
         },
         status: {
             type: DataTypes.ENUM('pending', 'in-progress', 'completed'),
+            defaultValue: "pending"
         },
         priority: {
             type: DataTypes.ENUM('low', 'medium', 'high'),
+            defaultValue: "low"
         },
         assignedTo: {
             type: DataTypes.INTEGER,
@@ -39,7 +40,15 @@ const Task = sequelize.define(
         version: {
             type: DataTypes.STRING,
             allowNull: true
-        }
+        },
+        createdAt: {
+            type: DataTypes.DATE,
+            field: 'created_at'
+        },
+        updatedAt: {
+            type: DataTypes.DATE,
+            field: 'updated_at'
+        },
     },
     { tableName: 'tasks' }
 )
