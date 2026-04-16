@@ -1,7 +1,7 @@
 import { validationResult } from "express-validator";
 import { sendError } from "../utils/responseHelper.js";
 
-export const validate = (includeErrors = true) => (req, res, next) => {
+export const validate = (includeErrors = false) => (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         const firstMessage = errors.array()[0].msg;
