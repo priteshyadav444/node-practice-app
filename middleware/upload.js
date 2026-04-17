@@ -1,8 +1,6 @@
 
 import multer from "multer";
 import path from "path";
-import { fileTypeFromFile } from "file-type";
-import fs from "fs";
 
 const ALLOWED_EXT = [".pdf", ".jpg", ".jpeg", ".png"];
 const ALLOWED_MIME = ["application/pdf", "image/jpeg", "image/png"];
@@ -36,26 +34,5 @@ const upload = multer({
     limits: { fileSize: MAX_SIZE },
 });
 
-// Middleware to check real file type after upload
-export const checkRealFileTypes = async (req, res, next) => {
-    if (!req.files) return next();
-    const failed = [];
-    for (const file of req.files) {
-        try {
-            const type = await fileTypeFromFile(file.path);
-            if (!type || !ALLOWED_MIME.includes(type.mime)) {
-                failed.push(file.filename);
-                fs.unlinkSync(file.path);
-            }
-        } catch (e) {
-            failed.push(file.filename);
-            fs.unlinkSync(file.path);
-        }
-    }
-    if (failed.length) {
-        return res.status(400).json({ success: false, message: "Some files were rejected (disguised or invalid type)", failed });
-    }
-    next();
-};
 
 export default upload;

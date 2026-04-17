@@ -1,0 +1,7 @@
+<h1>Edit Task</h1>
+<form action="/tasks/<%= task.id %>?_method=PUT" method="POST">
+  <input name="title" value="<%= task.title %>" required>
+  <textarea name="description"><%= task.description %></textarea>
+  <button type="submit">Update</button>
+</form>
+<a href="/tasks">Back</a>

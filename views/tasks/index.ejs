@@ -1,0 +1,13 @@
+<h1>Tasks</h1>
+<a href="/tasks/new">New Task</a>
+<ul>
+  <% tasks.forEach(task => { %>
+    <li>
+      <a href="/tasks/<%= task.id %>"><%= task.title %></a>
+      <a href="/tasks/<%= task.id %>/edit">Edit</a>
+      <form action="/tasks/<%= task.id %>?_method=DELETE" method="POST" style="display:inline;">
+        <button type="submit">Delete</button>
+      </form>
+    </li>
+  <% }) %>
+</ul>
