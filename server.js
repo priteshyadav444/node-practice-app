@@ -4,16 +4,31 @@ import sequelize from "./services/db.js";
 import authRoutes from "./routes/authRoutes.js"
 import taskRoutes from "./routes/taskRoutes.js"
 import webRoutes from "./routes/web.js"
+import webAuthRoutes from "./routes/webAuth.js"
 import path from "path";
+import session from "express-session";
 dotenv.config();
 
 const PORT = process.env.PORT;
 const app = express();
 
 
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// session for web UI
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'dev-secret',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { maxAge: 1000 * 60 * 60 * 24 }
+}));
+
+// expose logged-in user to views
+app.use((req, res, next) => {
+    res.locals.currentUser = req.session?.user || null;
+    next();
+});
 
 app.set('view engine', "ejs");
 app.set('views', path.join(process.cwd(), 'views'));
@@ -24,6 +39,7 @@ app.use("/api/tasks", taskRoutes);
 
 // Web routes
 app.use("/tasks", webRoutes);
+app.use("/auth", webAuthRoutes);
 
 
 try {

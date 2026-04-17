@@ -1,0 +1,14 @@
+<header>
+  <nav>
+    <a href="/tasks">Tasks</a>
+    <% if (currentUser) { %>
+      <span>Welcome, <%= currentUser.name || currentUser.email %></span>
+      <form action="/auth/logout" method="POST" style="display:inline;">
+        <button type="submit">Logout</button>
+      </form>
+    <% } else { %>
+      <a href="/auth/login">Login</a>
+      <a href="/auth/register">Register</a>
+    <% } %>
+  </nav>
+</header>

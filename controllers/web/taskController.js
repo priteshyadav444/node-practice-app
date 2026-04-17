@@ -1,5 +1,6 @@
-import { sendResponse, sendServerError } from "../../utils/responseHelper.js";
+import { sendServerError } from "../../utils/responseHelper.js";
 import * as taskService from "../../services/taskService.js";
+import { validationResult, matchedData } from "express-validator";
 
 // Render all tasks
 export const renderTasks = async (req, res) => {
@@ -13,7 +14,23 @@ export const renderTasks = async (req, res) => {
 
 // Render new task form
 export const renderNewTask = (req, res) => {
-    res.render("tasks/new");
+    res.render("tasks/new", { errors: null, old: {} });
+};
+
+// Handle create from form
+export const createTask = async (req, res) => {
+    try {
+        const errors = validationResult(req);
+        const old = req.body;
+        if (!errors.isEmpty()) {
+            return res.status(422).render("tasks/new", { errors: errors.array(), old });
+        }
+        const data = matchedData(req, { locations: ['body'] });
+        await taskService.createTask(data);
+        return res.redirect('/tasks');
+    } catch (error) {
+        sendServerError(res, error);
+    }
 };
 
 // Render edit task form
@@ -21,7 +38,35 @@ export const renderEditTask = async (req, res) => {
     try {
         const { id } = req.params;
         const task = await taskService.getTaskById(id);
-        res.render("tasks/edit", { task });
+        res.render("tasks/edit", { task, errors: null, old: {} });
+    } catch (error) {
+        sendServerError(res, error);
+    }
+};
+
+// Handle update from form
+export const updateTask = async (req, res) => {
+    try {
+        const errors = validationResult(req);
+        const old = req.body;
+        const { id } = req.params;
+        if (!errors.isEmpty()) {
+            const task = await taskService.getTaskById(id);
+            return res.status(422).render("tasks/edit", { task, errors: errors.array(), old });
+        }
+        const data = matchedData(req, { locations: ['body'] });
+        await taskService.updateTask(id, data);
+        return res.redirect('/tasks');
+    } catch (error) {
+        sendServerError(res, error);
+    }
+};
+
+export const deleteTask = async (req, res) => {
+    try {
+        const { id } = req.params;
+        await taskService.deleteTask(id);
+        return res.redirect('/tasks');
     } catch (error) {
         sendServerError(res, error);
     }
