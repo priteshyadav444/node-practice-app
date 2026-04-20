@@ -59,7 +59,14 @@ const Task = sequelize.define(
             field: 'updated_at'
         },
     },
-    { tableName: 'tasks' }
+    {
+        tableName: 'tasks',
+        defaultScope: {
+            where: {
+                isDeleted: null
+            }
+        }
+    }
 )
 
 export default Task;

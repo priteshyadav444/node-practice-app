@@ -13,7 +13,7 @@ const registerRules = [
                 throw new Error("Email already exist");
             }
         }),
-    body("password").isLength({ min: 8 }).withMessage('Password min length 8')
+    body("password").trim().isLength({ min: 8 }).withMessage('Password min length 8')
         .matches(/[A-Z]/).withMessage("Must include uppercase letter")
         .matches(/[a-z]/).withMessage("Must include lowercase letter")
         .matches(/[0-9]/).withMessage("Must include number")
