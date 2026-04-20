@@ -3,6 +3,7 @@ import { User } from "../../models/index.js";
 
 const registerRules = [
     body("name").notEmpty().withMessage('Name is required').trim(),
+    body("role").notEmpty().withMessage('Role is required').trim().isIn(["user", "manager", "admin"]).withMessage("Role should be user,manager or admin"),
     body("email").
         notEmpty().withMessage("Email required").trim()
         .custom(async (value) => {

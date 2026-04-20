@@ -12,6 +12,10 @@ const Task = sequelize.define(
         title: {
             type: DataTypes.STRING,
         },
+        description:{
+            type:DataTypes.TEXT,
+            allowNull: true,
+        },
         status: {
             type: DataTypes.ENUM('pending', 'in-progress', 'completed'),
             defaultValue: "pending"
@@ -44,6 +48,10 @@ const Task = sequelize.define(
         createdAt: {
             type: DataTypes.DATE,
             field: 'created_at'
+        },
+        dueDate: {
+            type: DataTypes.DATE,
+            field: 'due_date'
         },
         updatedAt: {
             type: DataTypes.DATE,

@@ -2,6 +2,8 @@ import { sendServerError } from "../../utils/responseHelper.js";
 import * as taskService from "../../services/taskService.js";
 import { validationResult, matchedData } from "express-validator";
 import { User } from "../../models/index.js";
+import { Op } from 'sequelize';
+import { getCurrentUser, getCurrentUserId } from "../../utils/sessionHelper.js";
 
 // Render all tasks
 export const renderTasks = async (req, res) => {
@@ -13,10 +15,18 @@ export const renderTasks = async (req, res) => {
     }
 };
 
+export async function getAssignedToUserList(req) {
+    const currentUserId = getCurrentUserId(req);
+    const where = { isActive: true };
+    if (currentUserId) where.id = { [Op.ne]: currentUserId };
+    const users = await User.findAll({ where });
+    return users ? users : [];
+}
+
 // Render new task form
 export const renderNewTask = async (req, res) => {
     try {
-        const users = await User.findAll({ where: { isActive: true } });
+        const users = await getAssignedToUserList(req);
         res.render("tasks/new", { errors: null, old: {}, users });
     } catch (error) {
         sendServerError(res, error);
@@ -45,7 +55,7 @@ export const renderEditTask = async (req, res) => {
     try {
         const { id } = req.params;
         const task = await taskService.getTaskById(id);
-        const users = await User.findAll({ where: { isActive: true } });
+        const users = await getAssignedToUserList(req);
         res.render("tasks/edit", { task, errors: null, old: {}, users });
     } catch (error) {
         sendServerError(res, error);

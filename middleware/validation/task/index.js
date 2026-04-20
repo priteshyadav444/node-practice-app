@@ -3,7 +3,7 @@ import { Task } from "../../../models/index.js";
 
 const createTaskRule = [
     body("title").notEmpty().withMessage('Task is required'),
-    body("description").optional(),
+    body("description").optional().isLength({ max: 500}).withMessage("Mx 500 chat allowed"),
     body("status").optional().isIn(["pending", "in-progress", "completed"]).withMessage('Status must be one of pending, in-progress, completed'),
     body("priority").optional().isIn(["low", "medium", "high"]).withMessage('Priority must be one of low, medium, high'),
     body("dueDate").optional().isISO8601().toDate().withMessage('Due date must be a valid date'),
