@@ -17,14 +17,32 @@ export const createUser = async (data) => {
 export const login = async (data) => {
     const user = await User.findOne({ where: { email: data.email } });
     if (!user) throw new Error("Invalid credentials");
+    let loginAttempt = user.login_attempt;
+    if (loginAttempt >= 5) {
+        throw new Error("You are locked!!");
+    }
 
     const ok = await bcrypt.compare(data.password, user.password);
-    if (!ok) throw new Error("Invalid cred");
+    if (!ok) {
+        loginAttempt += 1;
+        user.login_attempt = loginAttempt;
+        user.save();
+        let message = '';
+
+        if (loginAttempt > 1){
+            message += `Wrong Attempt ${loginAttempt}`;
+        }
+        throw new Error(`Invalid credentials. ${message}`)
+    };
+
+    // Reset login attempt
+    user.login_attempt = 0;
+    user.save();
 
     const payload = { id: user.id };
     const expiresIn = JWT_EXPIRES_IN;
-    const token = jwt.sign(payload, JWT_SECRET, {  expiresIn });
-    const u = user.get({ plain: true});
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn });
+    const u = user.get({ plain: true });
     delete u.password;
     return { user: u, token, expiresIn };
 }

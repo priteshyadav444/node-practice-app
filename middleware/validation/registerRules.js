@@ -2,13 +2,11 @@ import { body } from "express-validator";
 import { User } from "../../models/index.js";
 
 const registerRules = [
-    body("name").notEmpty().withMessage('Name is required').trim()
-        .isAlphanumeric().withMessage("Email should be alpha numeric"),
+    body("name").notEmpty().withMessage('Name is required').trim(),
     body("email").
         notEmpty().withMessage("Email required").trim()
         .custom(async (value) => {
             const user = await User.findOne({ where: { email: value.toLowerCase() } });
-
             console.log(user);
             if (user) {
                 throw new Error("Email already exist");
