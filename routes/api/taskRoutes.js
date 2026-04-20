@@ -1,11 +1,11 @@
 
 import express from "express";
-import * as taskController from "../controllers/taskController.js";
-import * as taskFileController from "../controllers/taskFileController.js";
-import { validate } from "../middleware/validation/validate.js";
-import { updateTaskRule, createTaskRule, getTaskById, assignTaskRule } from "../middleware/validation/task/index.js";
-import { uploadTaskFileRule, taskFileIdRule } from "../middleware/validation/task/fileRules.js";
-import upload from "../middleware/upload.js";
+import * as taskController from "../../controllers/taskController.js";
+import * as taskFileController from "../../controllers/taskFileController.js";
+import { validate } from "../../middleware/validation/validate.js";
+import { updateTaskRule, createTaskRule, getTaskById, assignTaskRule } from "../../middleware/validation/task/index.js";
+import { uploadTaskFileRule, taskFileIdRule } from "../../middleware/validation/task/fileRules.js";
+import upload from "../../middleware/upload.js";
 
 
 const router = express.Router();
