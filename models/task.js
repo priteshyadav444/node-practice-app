@@ -42,7 +42,8 @@ const Task = sequelize.define(
             field: 'deleted_at'
         },
         version: {
-            type: DataTypes.STRING,
+            type: DataTypes.INTEGER,
+            defaultValue: 1,
             allowNull: true
         },
         createdAt: {

@@ -1,7 +1,7 @@
 import { Task } from "../models/index.js";
 
 export const createTask = async (data) => {
-    const task = await Task.create(data);
+const task = await Task.create(data);
     return task;
 }
 
@@ -18,6 +18,7 @@ export const getTasks = async () => {
 }
 
 export const updateTask = async (taskId, data) => {
+    data.version = parseInt(data.version) + 1;
     const task = await Task.update(data, { where: { id: taskId } });
     if (!task) {
         throw new Error("Unable to update task");

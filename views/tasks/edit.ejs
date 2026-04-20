@@ -11,6 +11,7 @@
 
 
 <form action="/tasks/<%= task.id %>?_method=PUT" method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="version" maxlength="100" value="<%= task.version %>" required>
   <div>
     <label>Title</label>
     <input name="title" maxlength="100" value="<%= old && old.title ? old.title : task.title %>" required>

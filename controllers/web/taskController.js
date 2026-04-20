@@ -65,8 +65,6 @@ export const renderEditTask = async (req, res) => {
 // Handle update from form
 export const updateTask = async (req, res) => {
     try {
-        console.log('BODY:', req.body);
-        console.log('FILES:', req.files);
         const errors = validationResult(req);
         const old = req.body;
         const { id } = req.params;
