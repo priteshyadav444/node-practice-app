@@ -9,15 +9,67 @@
   </ul>
 <% } %>
 
-<form action="/tasks/<%= task.id %>?_method=PUT" method="POST">
+
+<form action="/tasks/<%= task.id %>?_method=PUT" method="POST" enctype="multipart/form-data">
   <div>
     <label>Title</label>
-    <input name="title" value="<%= old && old.title ? old.title : task.title %>" required>
+    <input name="title" maxlength="100" value="<%= old && old.title ? old.title : task.title %>" required>
   </div>
   <div>
     <label>Description</label>
-    <textarea name="description"><%= old && old.description ? old.description : task.description %></textarea>
+    <textarea name="description" maxlength="500"><%= old && old.description ? old.description : task.description %></textarea>
   </div>
+  <div>
+    <label>Status</label>
+    <select name="status" required>
+      <option value="pending" <%= (old?.status === 'pending') || (!old?.status && task?.status === 'pending') ? 'selected' : '' %>>Pending</option>
+      <option value="in-progress" <%= (old?.status === 'in-progress') || (!old?.status && task?.status === 'in-progress') ? 'selected' : '' %>>In Progress</option>
+      <option value="completed" <%= (old?.status === 'completed') || (!old?.status && task?.status === 'completed') ? 'selected' : '' %>>Completed</option>
+    </select>
+  </div>
+  <div>
+    <label>Priority</label>
+    <select name="priority" required>
+      <option value="low" <%= (old?.priority === 'low') || (!old?.priority && task?.priority === 'low') ? 'selected' : '' %>>Low</option>
+      <option value="medium" <%= (old?.priority === 'medium') || (!old?.priority && task?.priority === 'medium') ? 'selected' : '' %>>Medium</option>
+      <option value="high" <%= (old?.priority === 'high') || (!old?.priority && task?.priority === 'high') ? 'selected' : '' %>>High</option>
+    </select>
+  </div>
+  <div>
+    <label>Assigned To</label>
+    <select name="assignedTo" required>
+      <% if (users && users.length) { %>
+        <% users.forEach(function(user) { %>
+          <option value="<%= user.id %>" <%= (old?.assignedTo == user.id) || (!old?.assignedTo && task?.assignedTo == user.id) ? 'selected' : '' %>><%= user.email %> (<%= user.role %>)</option>
+        <% }) %>
+      <% } else { %>
+        <option value="">No users found</option>
+      <% } %>
+    </select>
+  </div>
+  <div>
+    <label>Due Date</label>
+    <input type="date" name="dueDate" min="<%= new Date().toISOString().split('T')[0] %>" value="<%= old?.dueDate ? old.dueDate : (task?.dueDate ? (task.dueDate.toISOString ? task.dueDate.toISOString().split('T')[0] : task.dueDate) : '') %>" required>
+  </div>
+  <div>
+    <label>Attachments (PDF, JPG, PNG, max 2MB each)</label>
+    <input type="file" name="attachments" multiple accept=".pdf,.jpg,.jpeg,.png">
+  </div>
+  <% if (task.attachment && task.attachment.length) { %>
+    <div>
+      <label>Existing Attachments:</label>
+      <ul>
+        <% task.attachment.forEach(function(file) { %>
+          <li>
+            <a href="/tasks/<%= task.id %>/files/<%= file.id %>" target="_blank"><%= file.originalname %></a>
+            <form action="/tasks/<%= task.id %>/files/<%= file.id %>?_method=DELETE" method="POST" style="display:inline;">
+              <button type="submit">Delete</button>
+            </form>
+          </li>
+        <% }) %>
+      </ul>
+    </div>
+  <% } %>
   <button type="submit">Update</button>
 </form>
 <a href="/tasks">Back</a>

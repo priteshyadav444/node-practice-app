@@ -1,4 +1,26 @@
+
 <%- include('../partials/header') %>
 <h1><%= task.title %></h1>
-<p><%= task.description %></p>
+<p><strong>Description:</strong> <%= task.description %></p>
+<p><strong>Status:</strong> <%= task.status %></p>
+<p><strong>Priority:</strong> <%= task.priority %></p>
+<p><strong>Assigned To:</strong> <%= task.assignedTo %></p>
+<p><strong>Due Date:</strong> <%= task.dueDate ? task.dueDate.toISOString ? task.dueDate.toISOString().split('T')[0] : task.dueDate : '' %></p>
+
+<% if (task.attachment && task.attachment.length) { %>
+	<div>
+		<strong>Attachments:</strong>
+		<ul>
+			<% task.attachment.forEach(function(file) { %>
+				<li>
+					<% if (file.mimetype && file.mimetype.startsWith('image/')) { %>
+						<img src="/tasks/<%= task.id %>/files/<%= file.id %>" alt="<%= file.originalname %>" style="max-width:150px;max-height:150px;" />
+					<% } %>
+					<a href="/tasks/<%= task.id %>/files/<%= file.id %>" target="_blank"><%= file.originalname %></a>
+				</li>
+			<% }) %>
+		</ul>
+	</div>
+<% } %>
+
 <a href="/tasks">Back</a>

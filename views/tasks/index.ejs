@@ -1,18 +1,38 @@
 <%- include('../partials/header') %>
 <h1>Tasks</h1>
 <a href="/tasks/new">New Task</a>
-<ul>
-  <% if (tasks && tasks.length) { %>
-    <% tasks.forEach(task => { %>
-      <li>
-        <a href="/tasks/<%= task.id %>"><%= task.title %></a>
-        <a href="/tasks/<%= task.id %>/edit">Edit</a>
-        <form action="/tasks/<%= task.id %>?_method=DELETE" method="POST" style="display:inline;">
-          <button type="submit">Delete</button>
-        </form>
-      </li>
-    <% }) %>
-  <% } else { %>
-    <li>No tasks found</li>
-  <% } %>
-</ul>
+<table border="1" cellpadding="5" cellspacing="0">
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Status</th>
+      <th>Priority</th>
+      <th>Assigned To</th>
+      <th>Due Date</th>
+      <th>Attachments</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% if (tasks && tasks.length) { %>
+      <% tasks.forEach(task => { %>
+        <tr>
+          <td><a href="/tasks/<%= task.id %>"><%= task.title %></a></td>
+          <td><%= task.status %></td>
+          <td><%= task.priority %></td>
+          <td><%= task.assignedTo %></td>
+          <td><%= task.dueDate ? task.dueDate.toISOString ? task.dueDate.toISOString().split('T')[0] : task.dueDate : '' %></td>
+          <td><%= task.attachment && task.attachment.length ? task.attachment.length : 0 %></td>
+          <td>
+            <a href="/tasks/<%= task.id %>/edit">Edit</a>
+            <form action="/tasks/<%= task.id %>?_method=DELETE" method="POST" style="display:inline;">
+              <button type="submit">Delete</button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+    <% } else { %>
+      <tr><td colspan="7">No tasks found</td></tr>
+    <% } %>
+  </tbody>
+</table>

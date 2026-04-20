@@ -1,6 +1,7 @@
 import { sendServerError } from "../../utils/responseHelper.js";
 import * as taskService from "../../services/taskService.js";
 import { validationResult, matchedData } from "express-validator";
+import { User } from "../../models/index.js";
 
 // Render all tasks
 export const renderTasks = async (req, res) => {
@@ -13,17 +14,25 @@ export const renderTasks = async (req, res) => {
 };
 
 // Render new task form
-export const renderNewTask = (req, res) => {
-    res.render("tasks/new", { errors: null, old: {} });
+export const renderNewTask = async (req, res) => {
+    try {
+        const users = await User.findAll({ where: { isActive: true } });
+        res.render("tasks/new", { errors: null, old: {}, users });
+    } catch (error) {
+        sendServerError(res, error);
+    }
 };
 
 // Handle create from form
 export const createTask = async (req, res) => {
     try {
+        console.log('BODY:', req.body);
+        console.log('FILES:', req.files);
         const errors = validationResult(req);
         const old = req.body;
+        const users = await User.findAll({ where: { isActive: true } });
         if (!errors.isEmpty()) {
-            return res.status(422).render("tasks/new", { errors: errors.array(), old });
+            return res.status(422).render("tasks/new", { errors: errors.array(), old, users });
         }
         const data = matchedData(req, { locations: ['body'] });
         await taskService.createTask(data);
@@ -38,7 +47,8 @@ export const renderEditTask = async (req, res) => {
     try {
         const { id } = req.params;
         const task = await taskService.getTaskById(id);
-        res.render("tasks/edit", { task, errors: null, old: {} });
+        const users = await User.findAll({ where: { isActive: true } });
+        res.render("tasks/edit", { task, errors: null, old: {}, users });
     } catch (error) {
         sendServerError(res, error);
     }
@@ -47,12 +57,15 @@ export const renderEditTask = async (req, res) => {
 // Handle update from form
 export const updateTask = async (req, res) => {
     try {
+        console.log('BODY:', req.body);
+        console.log('FILES:', req.files);
         const errors = validationResult(req);
         const old = req.body;
         const { id } = req.params;
+        const users = await User.findAll({ where: { isActive: true } });
         if (!errors.isEmpty()) {
             const task = await taskService.getTaskById(id);
-            return res.status(422).render("tasks/edit", { task, errors: errors.array(), old });
+            return res.status(422).render("tasks/edit", { task, errors: errors.array(), old, users });
         }
         const data = matchedData(req, { locations: ['body'] });
         await taskService.updateTask(id, data);

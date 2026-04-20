@@ -9,14 +9,51 @@
   </ul>
 <% } %>
 
-<form action="/tasks" method="POST">
+
+<form action="/tasks" method="POST" enctype="multipart/form-data">
   <div>
     <label>Title</label>
-    <input name="title" value="<%= old && old.title ? old.title : '' %>" required>
+    <input name="title" maxlength="100" value="<%= old && old.title ? old.title : '' %>" required>
   </div>
   <div>
     <label>Description</label>
-    <textarea name="description"><%= old && old.description ? old.description : '' %></textarea>
+    <textarea name="description" maxlength="500"><%= old && old.description ? old.description : '' %></textarea>
+  </div>
+  <div>
+    <label>Status</label>
+    <select name="status" required>
+      <option value="pending" <%= old && old.status === 'pending' ? 'selected' : '' %>>Pending</option>
+      <option value="in-progress" <%= old && old.status === 'in-progress' ? 'selected' : '' %>>In Progress</option>
+      <option value="completed" <%= old && old.status === 'completed' ? 'selected' : '' %>>Completed</option>
+    </select>
+  </div>
+  <div>
+    <label>Priority</label>
+    <select name="priority" required>
+      <option value="low" <%= old && old.priority === 'low' ? 'selected' : '' %>>Low</option>
+      <option value="medium" <%= old && old.priority === 'medium' ? 'selected' : '' %>>Medium</option>
+      <option value="high" <%= old && old.priority === 'high' ? 'selected' : '' %>>High</option>
+    </select>
+  </div>
+  <div>
+    <label>Assigned To</label>
+    <select name="assignedTo" required>
+      <% if (users && users.length) { %>
+        <% users.forEach(function(user) { %>
+          <option value="<%= user.id %>" <%= old && old.assignedTo == user.id ? 'selected' : '' %>><%= user.email %> (<%= user.role %>)</option>
+        <% }) %>
+      <% } else { %>
+        <option value="">No users found</option>
+      <% } %>
+    </select>
+  </div>
+  <div>
+    <label>Due Date</label>
+    <input type="date" name="dueDate" min="<%= new Date().toISOString().split('T')[0] %>" value="<%= old && old.dueDate ? old.dueDate : '' %>" required>
+  </div>
+  <div>
+    <label>Attachments (PDF, JPG, PNG, max 2MB each)</label>
+    <input type="file" name="attachments" multiple accept=".pdf,.jpg,.jpeg,.png">
   </div>
   <button type="submit">Create</button>
 </form>
