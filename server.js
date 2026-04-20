@@ -7,23 +7,24 @@ import webRoutes from "./routes/web/task.js"
 import webAuthRoutes from "./routes/web/auth.js"
 import path from "path";
 import session from "express-session";
+import cookieParser from "cookie-parser";
 dotenv.config();
 
 const PORT = process.env.PORT;
 const app = express();
 
-
+// Api Middleware
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
-// session for web UI
+// Web Middleware
+app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
 app.use(session({
     secret: process.env.SESSION_SECRET || 'dev-secret',
     resave: false,
     saveUninitialized: false,
     cookie: { maxAge: 1000 * 60 * 60 * 24 }
 }));
-
 // expose logged-in user to views
 app.use((req, res, next) => {
     res.locals.currentUser = req.session?.user || null;
