@@ -1,7 +1,7 @@
 import { Task } from "../models/index.js";
 
 export const createTask = async (data) => {
-const task = await Task.create(data);
+    const task = await Task.create(data);
     return task;
 }
 
@@ -27,7 +27,9 @@ export const updateTask = async (taskId, data) => {
 }
 
 export const deleteTask = async (taskId) => {
-    const isSuccess = await Task.destroy({ where: { id: taskId } });
+    const isSuccess = await Task.update({
+        deletedAt: Date.now()
+    }, { where: { id: taskId } });
     if (!isSuccess) {
         throw new Error("Unable to delete task", isSuccess);
     }

@@ -37,7 +37,7 @@ const Task = sequelize.define(
             type: DataTypes.JSON,
             allowNull: true,
         },
-        isDeleted: {
+        deletedAt: {
             type: DataTypes.DATE,
             field: 'deleted_at'
         },
@@ -63,7 +63,7 @@ const Task = sequelize.define(
         tableName: 'tasks',
         defaultScope: {
             where: {
-                isDeleted: null
+                deletedAt: null
             }
         }
     }
