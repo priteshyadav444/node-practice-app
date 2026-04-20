@@ -1,13 +1,15 @@
 <%- include('../partials/header') %>
 <h1>Register</h1>
 
-<% if (errors && errors.length) { %>
-  <ul style="color:red;">
-    <% errors.forEach(err => { %>
-      <li><%= err.msg %></li>
-    <% }) %>
-  </ul>
-<% } %>
+<%
+  if(errors && errors.length > 0){ %>
+    <ul style="color: red;">
+      <% errors.forEach((err) => { console.log(err) %> 
+        <li> <%= err.msg %></li>
+      <% })%>
+    </ul>
+    <% }%>
+%>
 
 <form action="/auth/register" method="POST">
   <div>
@@ -21,6 +23,14 @@
   <div>
     <label>Password</label>
     <input name="password" type="password" required>
+  </div>
+   <div>
+    <label>Password</label>
+    <select name="role" type="" value="<%= old && old.role ? old.role : '' %>" required>
+      <option value="admin"> Admin </option>
+      <option value="manger"> Manager </option>
+      <option value="user"> User </option>
+    </select>
   </div>
   <button type="submit">Register</button>
 </form>

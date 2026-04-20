@@ -26,8 +26,6 @@ export const renderNewTask = async (req, res) => {
 // Handle create from form
 export const createTask = async (req, res) => {
     try {
-        console.log('BODY:', req.body);
-        console.log('FILES:', req.files);
         const errors = validationResult(req);
         const old = req.body;
         const users = await User.findAll({ where: { isActive: true } });

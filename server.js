@@ -4,7 +4,7 @@ import sequelize from "./services/db.js";
 import authRoutes from "./routes/authRoutes.js"
 import taskRoutes from "./routes/taskRoutes.js"
 import webRoutes from "./routes/web.js"
-import webAuthRoutes from "./routes/webAuth.js"
+import webAuthRoutes from "./routes/web/auth.js"
 import path from "path";
 import session from "express-session";
 dotenv.config();
