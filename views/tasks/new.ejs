@@ -10,6 +10,7 @@
 <% } %>
 
 
+<% if (hasPermission(currentUser, 'task:create')) { %>
 <form action="/tasks" method="POST" enctype="multipart/form-data">
   <div>
     <label>Title</label>
@@ -57,4 +58,7 @@
   </div>
   <button type="submit">Create</button>
 </form>
+<% } else { %>
+  <p>You do not have permission to create tasks.</p>
+<% } %>
 <a href="/tasks">Back</a>

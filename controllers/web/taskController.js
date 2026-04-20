@@ -4,6 +4,7 @@ import { validationResult, matchedData } from "express-validator";
 import { User } from "../../models/index.js";
 import { Op } from 'sequelize';
 import { getCurrentUser, getCurrentUserId } from "../../utils/sessionHelper.js";
+import { hasPermission } from '../../utils/permissionHelper.js';
 
 // Render all tasks
 export const renderTasks = async (req, res) => {
@@ -26,6 +27,7 @@ export async function getAssignedToUserList(req) {
 // Render new task form
 export const renderNewTask = async (req, res) => {
     try {
+        if (!hasPermission(req.session.user, 'task:create')) return res.status(403).send('Forbidden');
         const users = await getAssignedToUserList(req);
         res.render("tasks/new", { errors: null, old: {}, users });
     } catch (error) {
@@ -36,6 +38,7 @@ export const renderNewTask = async (req, res) => {
 // Handle create from form
 export const createTask = async (req, res) => {
     try {
+        if (!hasPermission(req.session.user, 'task:create')) return res.status(403).send('Forbidden');
         const errors = validationResult(req);
         const old = req.body;
         const users = await User.findAll({ where: { isActive: true } });
@@ -53,6 +56,7 @@ export const createTask = async (req, res) => {
 // Render edit task form
 export const renderEditTask = async (req, res) => {
     try {
+        if (!hasPermission(req.session.user, 'task:edit')) return res.status(403).send('Forbidden');
         const { id } = req.params;
         const task = await taskService.getTaskById(id);
         const users = await getAssignedToUserList(req);
@@ -65,6 +69,7 @@ export const renderEditTask = async (req, res) => {
 // Handle update from form
 export const updateTask = async (req, res) => {
     try {
+        if (!hasPermission(req.session.user, 'task:edit')) return res.status(403).send('Forbidden');
         const errors = validationResult(req);
         const old = req.body;
         const { id } = req.params;
@@ -83,6 +88,7 @@ export const updateTask = async (req, res) => {
 
 export const deleteTask = async (req, res) => {
     try {
+        if (!hasPermission(req.session.user, 'task:delete')) return res.status(403).send('Forbidden');
         const { id } = req.params;
         await taskService.deleteTask(id);
         return res.redirect('/tasks');

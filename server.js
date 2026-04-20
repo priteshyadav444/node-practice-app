@@ -8,6 +8,8 @@ import webAuthRoutes from "./routes/web/auth.js"
 import path from "path";
 import session from "express-session";
 import cookieParser from "cookie-parser";
+import { hasPermission } from './utils/permissionHelper.js';
+
 dotenv.config();
 
 const PORT = process.env.PORT;
@@ -28,11 +30,15 @@ app.use(session({
 // expose logged-in user to views
 app.use((req, res, next) => {
     res.locals.currentUser = req.session?.user || null;
+    res.locals.currentUserRole = req.session?.user?.role || null;
     next();
 });
 
 app.set('view engine', "ejs");
 app.set('views', path.join(process.cwd(), 'views'));
+
+// expose permission check to EJS templates: use in views as `hasPermission(currentUser, 'task:edit')`
+app.locals.hasPermission = (user, permission) => hasPermission(user, permission);
 
 // API routes
 app.use("/api/auth", authRoutes);

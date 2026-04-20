@@ -63,14 +63,20 @@
         <% task.attachment.forEach(function(file) { %>
           <li>
             <a href="/tasks/<%= task.id %>/files/<%= file.id %>" target="_blank"><%= file.originalname %></a>
-            <form action="/tasks/<%= task.id %>/files/<%= file.id %>?_method=DELETE" method="POST" style="display:inline;">
-              <button type="submit">Delete</button>
-            </form>
+            <% if (hasPermission(currentUser, 'task:edit')) { %>
+              <form action="/tasks/<%= task.id %>/files/<%= file.id %>?_method=DELETE" method="POST" style="display:inline;">
+                <button type="submit">Delete</button>
+              </form>
+            <% } %>
           </li>
         <% }) %>
       </ul>
     </div>
   <% } %>
-  <button type="submit">Update</button>
+  <% if (hasPermission(currentUser, 'task:edit')) { %>
+    <button type="submit">Update</button>
+  <% } else { %>
+    <p>You do not have permission to edit this task.</p>
+  <% } %>
 </form>
 <a href="/tasks">Back</a>

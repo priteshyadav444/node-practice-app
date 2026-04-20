@@ -1,6 +1,8 @@
 <%- include('../partials/header') %>
 <h1>Tasks</h1>
-<a href="/tasks/new">New Task</a>
+<% if (hasPermission(currentUser, 'task:create')) { %>
+  <a href="/tasks/new">New Task</a>
+<% } %>
 <table border="1" cellpadding="5" cellspacing="0">
   <thead>
     <tr>
@@ -24,10 +26,14 @@
           <td><%= task.dueDate ? task.dueDate.toISOString ? task.dueDate.toISOString().split('T')[0] : task.dueDate : '' %></td>
           <td><%= task.attachment && task.attachment.length ? task.attachment.length : 0 %></td>
           <td>
-            <a href="/tasks/<%= task.id %>/edit">Edit</a>
-            <form action="/tasks/<%= task.id %>?_method=DELETE" method="POST" style="display:inline;">
-              <button type="submit">Delete</button>
-            </form>
+            <% if (hasPermission(currentUser, 'task:edit')) { %>
+              <a href="/tasks/<%= task.id %>/edit">Edit</a>
+            <% } %>
+            <% if (hasPermission(currentUser, 'task:delete')) { %>
+              <form action="/tasks/<%= task.id %>?_method=DELETE" method="POST" style="display:inline;">
+                <button type="submit">Delete</button>
+              </form>
+            <% } %>
           </td>
         </tr>
       <% }) %>
