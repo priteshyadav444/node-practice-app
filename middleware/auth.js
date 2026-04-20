@@ -6,7 +6,9 @@ const JWT_SECRET = process.env.JWT_SECRET;
 export default async function auth(req, res, next) {
     try {
         // read token from Authorization header or cookie
+        let token = null;
         if (!token && req.cookies && req.cookies.token) token = req.cookies.token;
+
         if (!token) return res.redirect('/auth/login');
 
         const payload = jwt.verify(token, JWT_SECRET);
