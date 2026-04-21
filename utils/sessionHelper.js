@@ -1,5 +1,5 @@
 export function getCurrentUser(req){
-    if(req.session && req.session.user){
+    if(req.session != null && req.session.user){
         return req.session.user;
     }
     null;

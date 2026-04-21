@@ -26,6 +26,14 @@ export const updateTask = async (taskId, data) => {
     return getTaskById(taskId);
 }
 
+export const updateAssignToTask = async (taskId, data) => {
+    const task = await Task.update(data, { where: { id: taskId } });
+    if (!task) {
+        throw new Error("Unable to assign task");
+    }
+    return getTaskById(taskId);
+}
+
 export const deleteTask = async (taskId) => {
     const isSuccess = await Task.update({
         deletedAt: Date.now()

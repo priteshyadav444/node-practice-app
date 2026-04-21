@@ -1,0 +1,19 @@
+<%- include('../partials/header') %>
+<h1> Assign Task </h1>
+
+<h2> Task Title : <%= task.title ? task.title : '' %> </h2>
+<form action="/tasks/<%= task.id %>/assign?_method=PUT" method="POST">
+    <div>
+        <label name="assignedTo"> Assign to</label>
+        <select name="assignedTo" id="assignedTo"> 
+            <% if(users && users.length > 0){  %>
+                 <% users.forEach(function(user){ %>
+                    <option value="<%= user.id %>" <%= (task.assignedTo && task.assignedTo == user.id) ? 'selected' : '' %> > <%= user.name %> </option>
+                <% }) %>
+            <%} else{ %>
+                <option value="" > No user available </option>
+            <% } %>
+        </select>
+    </div>
+    <button type="submit"> Update </button>
+</form>

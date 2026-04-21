@@ -2,8 +2,8 @@
 // Roles: 'admin', 'manager', 'user' (case-insensitive)
 
 const ROLE_PERMISSIONS = {
-    admin: ['task:create', 'task:edit', 'task:delete', 'task:view'],
-    manager: ['task:create', 'task:edit', 'task:view'],
+    admin: ['task:create', 'task:edit', 'task:delete', 'task:view',  'task:assign'],
+    manager: ['task:create', 'task:edit', 'task:view',  'task:assign'],
     user: ['task:create', 'task:view']
 };
 

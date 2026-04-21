@@ -29,6 +29,11 @@
             <% if (hasPermission(currentUser, 'task:edit')) { %>
               <a href="/tasks/<%= task.id %>/edit">Edit</a>
             <% } %>
+
+            <% if (hasPermission(currentUser, 'task:assign')) { %>
+              <a href="/tasks/<%= task.id %>/assign">Assign Task</a>
+            <% } %>
+
             <% if (hasPermission(currentUser, 'task:delete')) { %>
               <form action="/tasks/<%= task.id %>?_method=DELETE" method="POST" style="display:inline;">
                 <button type="submit">Delete</button>

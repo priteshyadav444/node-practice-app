@@ -66,6 +66,38 @@ export const renderEditTask = async (req, res) => {
     }
 };
 
+export const renderAssignTask = async (req, res) => {
+    try {
+        if (!hasPermission(req.session.user, 'task:assign')) return res.status(403).send('Forbidden');
+        const { id } = req.params;
+        const task = await taskService.getTaskById(id);
+        const users = await getAssignedToUserList(req);
+        res.render("tasks/assign", { task, errors: null, old: {}, users });
+    } catch (error) {
+        sendServerError(res, error);
+    }
+};
+
+export const assignToTask = async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!hasPermission(getCurrentUser(req), 'task:assign')) return res.status(403).send('Forbidden');
+        const errors = validationResult(req);
+        const old = req.body;
+        const data = matchedData(req, { locations: ['body'] });
+        if (!errors.isEmpty()) {
+            const task = await taskService.getTaskById(id);
+            const users = await getAssignedToUserList(req);
+            res.render("tasks/assign", { task, errors, old, users });
+        }
+        await taskService.updateAssignToTask(id, data);
+        res.redirect(`/tasks/${id}/assign`);
+    } catch (error) {
+        console.log(error); ``
+        sendServerError(res, error);
+    }
+}
+
 // Handle update from form
 export const updateTask = async (req, res) => {
     try {
