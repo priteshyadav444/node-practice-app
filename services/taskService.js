@@ -1,9 +1,12 @@
 import { Op } from "sequelize";
 import { Task } from "../models/index.js";
 import { getCurrentUserId } from "../utils/sessionHelper.js";
+import * as cacheService from "./cacheService.js";
 
 export const createTask = async (data) => {
     const task = await Task.create(data);
+    // Invalidate cached task lists
+    cacheService.delByPrefix('tasks:');
     return task;
 }
 
@@ -15,6 +18,10 @@ export const getTaskById = async (taskId) => {
 
 
 export const getTasks = async (currentUserId) => {
+    const cacheKey = `tasks:${currentUserId || 'all'}`;
+    const cached = cacheService.get(cacheKey);
+    if (cached) return cached;
+
     const tasks = await Task.findAll({
         where: {
             [Op.or]: [
@@ -22,8 +29,10 @@ export const getTasks = async (currentUserId) => {
                 { userId: currentUserId }
             ],
         }
-    })
-    return tasks;
+    });
+    const plain = tasks.map(t => (typeof t.get === 'function' ? t.get({ plain: true }) : t));
+    cacheService.set(cacheKey, plain);
+    return plain;
 }
 
 export const updateTask = async (taskId, data) => {
@@ -32,6 +41,8 @@ export const updateTask = async (taskId, data) => {
     if (!task) {
         throw new Error("Unable to update task");
     }
+    // Invalidate cached task lists
+    cacheService.delByPrefix('tasks:');
     return getTaskById(taskId);
 }
 
@@ -40,6 +51,8 @@ export const updateAssignToTask = async (taskId, data) => {
     if (!task) {
         throw new Error("Unable to assign task");
     }
+    
+    cacheService.delByPrefix('tasks:');
     return getTaskById(taskId);
 }
 
@@ -50,5 +63,7 @@ export const deleteTask = async (taskId) => {
     if (!isSuccess) {
         throw new Error("Unable to delete task", isSuccess);
     }
+    // Invalidate cached task lists
+    cacheService.delByPrefix('tasks:');
     return isSuccess;
 }

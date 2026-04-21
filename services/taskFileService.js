@@ -1,6 +1,7 @@
 import { Task } from "../models/index.js";
 import fs from "fs";
 import path from "path";
+import * as cacheService from "./cacheService.js";
 
 export const uploadTaskFile = async (taskId, file) => {
     // Save file info in DB (or in Task.attachment array)
@@ -18,6 +19,8 @@ export const uploadTaskFile = async (taskId, file) => {
     };
     attachments.push(fileData);
     await task.update({ attachment: attachments });
+    // Invalidate tasks cache since attachments changed
+    cacheService.delByPrefix('tasks:');
     return fileData;
 };
 
@@ -42,5 +45,7 @@ export const deleteTaskFile = async (taskId, fileId) => {
     try {
         fs.unlinkSync(path.resolve(file.path));
     } catch (e) {}
+    // Invalidate tasks cache since attachments changed
+    cacheService.delByPrefix('tasks:');
     return file;
 };
