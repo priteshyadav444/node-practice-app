@@ -1,10 +1,12 @@
 import { sendResponse, sendServerError } from "../utils/responseHelper.js";
 import * as taskService from "../services/taskService.js";
 import { matchedData } from "express-validator";
+import { getCurrentUserId } from "../utils/sessionHelper.js";
 
 export const createTask = async (req, res) => {
     try {
         const data = matchedData(req, { locations: ['body'] });
+        data.userId = getCurrentUserId(req);
         const task = await taskService.createTask(data);
         return sendResponse(res, "Task created successfully!", task)
     } catch (error) {
@@ -25,7 +27,8 @@ export const getTaskById = async (req, res) => {
 
 export const getTasks = async (req, res) => {
     try {
-        const tasks = await taskService.getTasks();
+        const currentUserId = getCurrentUserId(req);
+        const tasks = await taskService.getTasks(currentUserId);
         return sendResponse(res, "Task fetched successfully!", tasks)
     } catch (error) {
         sendServerError(res, error);

@@ -1,4 +1,6 @@
+import { Op } from "sequelize";
 import { Task } from "../models/index.js";
+import { getCurrentUserId } from "../utils/sessionHelper.js";
 
 export const createTask = async (data) => {
     const task = await Task.create(data);
@@ -12,8 +14,15 @@ export const getTaskById = async (taskId) => {
 }
 
 
-export const getTasks = async () => {
-    const tasks = await Task.findAll()
+export const getTasks = async (currentUserId) => {
+    const tasks = await Task.findAll({
+        where: {
+            [Op.or]: [
+                { assignedTo: currentUserId },
+                { userId: currentUserId }
+            ],
+        }
+    })
     return tasks;
 }
 

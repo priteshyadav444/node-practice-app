@@ -11,13 +11,13 @@ webRoutes.use(methodOverride('_method'));
 // EJS views
 webRoutes.get("/", auth, taskController.renderTasks);
 webRoutes.get("/new", auth, taskController.renderNewTask);
-webRoutes.post("/", upload.array('attachments'), createTaskRule, taskController.createTask);
+webRoutes.post("/", auth, upload.array('attachments'), createTaskRule, taskController.createTask);
 webRoutes.get("/:id/edit", auth, taskController.renderEditTask);
 webRoutes.get("/:id/assign", auth, taskController.renderAssignTask);
 webRoutes.put("/:id/assign", auth, assignTaskRule, taskController.assignToTask);
 webRoutes.get("/:id/edit", auth, taskController.renderEditTask);
-webRoutes.put("/:id", upload.array('attachments'), updateTaskRule, taskController.updateTask);
-webRoutes.delete("/:id", taskController.deleteTask);
+webRoutes.put("/:id", auth, upload.array('attachments'), updateTaskRule, taskController.updateTask);
+webRoutes.delete("/:id", auth,  taskController.deleteTask);
 webRoutes.get("/:id", auth, taskController.renderShowTask);
 
 export default webRoutes;
