@@ -31,6 +31,11 @@ app.use(session({
 app.use((req, res, next) => {
     res.locals.currentUser = req.session?.user || null;
     res.locals.currentUserRole = req.session?.user?.role || null;
+    res.locals.flashMessage = null;
+    if(req.session?.flashMessage){
+        res.locals.flashMessage = req.session?.flashMessage || null;
+        req.session.flashMessage = null;
+    }
     next();
 });
 

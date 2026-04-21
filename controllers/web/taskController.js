@@ -3,7 +3,7 @@ import * as taskService from "../../services/taskService.js";
 import { validationResult, matchedData } from "express-validator";
 import { User } from "../../models/index.js";
 import { Op } from 'sequelize';
-import { getCurrentUser, getCurrentUserId } from "../../utils/sessionHelper.js";
+import { getCurrentUser, getCurrentUserId, setFlashMessage } from "../../utils/sessionHelper.js";
 import { hasPermission } from '../../utils/permissionHelper.js';
 
 // Render all tasks
@@ -91,6 +91,7 @@ export const assignToTask = async (req, res) => {
             res.render("tasks/assign", { task, errors, old, users });
         }
         await taskService.updateAssignToTask(id, data);
+        setFlashMessage(req, "Task assigned successfully");
         res.redirect(`/tasks/${id}/assign`);
     } catch (error) {
         console.log(error); ``

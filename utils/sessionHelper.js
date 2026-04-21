@@ -20,3 +20,7 @@ export function getCurrentUserRole(req){
     }
     return null;
 }
+
+export function setFlashMessage(req, message){
+    req.session.flashMessage = message;
+}

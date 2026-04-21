@@ -12,3 +12,9 @@
     <% } %>
   </nav>
 </header>
+
+<% if (flashMessage) { %>
+<h1 style="color: green;" >
+  <%= flashMessage %>
+</h1>
+<% } %>
