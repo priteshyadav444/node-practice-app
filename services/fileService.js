@@ -1,8 +1,19 @@
 import fs from 'fs';
 import path from 'path';
 import { Task } from '../models/index.js';
+import { moveFromTempToFinal } from '../middleware/upload.js';
 
 const UPLOAD_DIR = path.resolve(process.cwd(), 'uploads') + path.sep;
+
+// Securely copy a file within uploads directory
+export const copyFileSafe = async (src, dest) => {
+    const resolvedSrc = path.resolve(src);
+    const resolvedDest = path.resolve(dest);
+    if (!resolvedSrc.startsWith(UPLOAD_DIR) || !resolvedDest.startsWith(UPLOAD_DIR)) {
+        throw new Error('Invalid path: must be within uploads directory');
+    }
+    await fs.promises.copyFile(resolvedSrc, resolvedDest);
+};
 
 const safeUnlink = (filePath) => {
     try {
@@ -10,14 +21,6 @@ const safeUnlink = (filePath) => {
         if (!resolved.startsWith(UPLOAD_DIR)) return;
         if (fs.existsSync(resolved)) fs.unlinkSync(resolved);
     } catch (e) {}
-};
-
-const detectFileType = (filePath) => {
-    const buffer = fs.readFileSync(filePath);
-    if (buffer.slice(0, 4).toString() === '%PDF') return 'pdf';
-    if (buffer.length >= 8 && buffer.slice(0, 8).equals(Buffer.from([0x89,0x50,0x4E,0x47,0x0D,0x0A,0x1A,0x0A]))) return 'png';
-    if (buffer.length >= 2 && buffer[0] === 0xFF && buffer[1] === 0xD8) return 'jpg';
-    return null;
 };
 
 export const saveFilesToTask = async (taskId, files) => {
@@ -30,12 +33,8 @@ export const saveFilesToTask = async (taskId, files) => {
 
     try {
         for (const file of files) {
-            const detected = detectFileType(file.path);
-            if (!detected) throw new Error('Uploaded file type is not allowed or file is corrupted');
-            const ext = path.extname(file.originalname).toLowerCase();
-            if ((detected === 'pdf' && ext !== '.pdf') || (detected === 'png' && ext !== '.png') || (detected === 'jpg' && ext !== '.jpg' && ext !== '.jpeg')) {
-                throw new Error('File extension does not match file content');
-            }
+            // Move file from temp to uploads before validation
+            await moveFromTempToFinal(file);
             const fileData = {
                 id: Date.now() + Math.round(Math.random() * 1e9),
                 originalname: file.originalname,
