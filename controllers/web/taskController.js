@@ -1,5 +1,6 @@
-import { sendServerError } from "../../utils/responseHelper.js";
+import { sendServerError, sendError } from "../../utils/responseHelper.js";
 import * as taskService from "../../services/taskService.js";
+import * as fileService from "../../services/fileService.js";
 import { validationResult, matchedData } from "express-validator";
 import { User } from "../../models/index.js";
 import { Op } from 'sequelize';
@@ -140,5 +141,53 @@ export const renderShowTask = async (req, res) => {
         res.render("tasks/show", { task });
     } catch (error) {
         sendServerError(res, error);
+    }
+};
+
+export const downloadTaskFile = async (req, res) => {
+    try {
+        const { id: taskId, fileId } = req.params;
+        const file = await (await import('../../services/taskFileService.js')).getTaskFile(taskId, fileId);
+        const mime = file.mimetype || 'application/octet-stream';
+        res.setHeader('Content-Type', mime);
+        res.setHeader('Content-Disposition', `inline; filename="${file.originalname.replace(/\"/g,'') }"`);
+        return res.sendFile(file.path);
+    } catch (error) {
+        return sendServerError(res, error);
+    }
+};
+
+export const deleteTaskFile = async (req, res) => {
+    try {
+        const { id: taskId, fileId } = req.params;
+        if (!hasPermission(getCurrentUser(req), 'task:edit')) return res.status(403).send('Forbidden');
+        const fileService = await import('../../services/fileService.js');
+        await fileService.deleteSingleFile(taskId, fileId);
+        return res.redirect(`/tasks/${taskId}/edit`);
+    } catch (error) {
+        return sendServerError(res, error);
+    }
+};
+
+// Handle multiple file uploads from task details page
+export const uploadTaskFiles = async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!hasPermission(getCurrentUser(req), 'task:edit')) return res.status(403).send('Forbidden');
+
+        if (!req.files || req.files.length === 0) {
+            setFlashMessage(req, 'No files uploaded');
+            return res.redirect(`/tasks/${id}`);
+        }
+
+        try {
+            await fileService.saveFilesToTask(id, req.files);
+            setFlashMessage(req, 'Files uploaded successfully');
+            return res.redirect(`/tasks/${id}`);
+        } catch (e) {
+            return sendServerError(res, e);
+        }
+    } catch (error) {
+        return sendServerError(res, error);
     }
 };

@@ -24,3 +24,10 @@
 <% } %>
 
 <a href="/tasks">Back</a>
+
+<hr />
+<h3>Upload Attachments</h3>
+<form action="/tasks/<%= task.id %>/files" method="post" enctype="multipart/form-data">
+	<input type="file" name="attachments" multiple />
+	<button type="submit">Upload</button>
+</form>

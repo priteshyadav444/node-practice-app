@@ -13,11 +13,17 @@ webRoutes.get("/", auth, taskController.renderTasks);
 webRoutes.get("/new", auth, taskController.renderNewTask);
 webRoutes.post("/", auth, upload.array('attachments'), createTaskRule, taskController.createTask);
 webRoutes.get("/:id/edit", auth, taskController.renderEditTask);
+// file download (preview) and delete for web UI
+webRoutes.get('/:id/files/:fileId', auth, taskController.downloadTaskFile);
+webRoutes.delete('/:id/files/:fileId', auth, taskController.deleteTaskFile);
 webRoutes.get("/:id/assign", auth, taskController.renderAssignTask);
 webRoutes.put("/:id/assign", auth, assignTaskRule, taskController.assignToTask);
 webRoutes.get("/:id/edit", auth, taskController.renderEditTask);
 webRoutes.put("/:id", auth, upload.array('attachments'), updateTaskRule, taskController.updateTask);
 webRoutes.delete("/:id", auth,  taskController.deleteTask);
+// upload attachments from task details view
+webRoutes.post("/:id/files", auth, upload.array('attachments'), taskController.uploadTaskFiles);
+
 webRoutes.get("/:id", auth, taskController.renderShowTask);
 
 export default webRoutes;

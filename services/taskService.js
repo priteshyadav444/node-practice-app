@@ -1,7 +1,7 @@
 import { Op } from "sequelize";
 import { Task } from "../models/index.js";
-import { getCurrentUserId } from "../utils/sessionHelper.js";
 import * as cacheService from "./cacheService.js";
+import * as fileService from "./fileService.js";
 
 export const createTask = async (data) => {
     const task = await Task.create(data);
@@ -57,9 +57,9 @@ export const updateAssignToTask = async (taskId, data) => {
 }
 
 export const deleteTask = async (taskId) => {
-    const isSuccess = await Task.update({
-        deletedAt: Date.now()
-    }, { where: { id: taskId } });
+    // delete files from disk (best-effort)
+    try { await fileService.deleteFilesForTask(taskId); } catch (e) {}
+    const isSuccess = await Task.update({ deletedAt: Date.now() }, { where: { id: taskId } });
     if (!isSuccess) {
         throw new Error("Unable to delete task", isSuccess);
     }

@@ -21,6 +21,7 @@ export function getCurrentUserRole(req){
     return null;
 }
 
-export function setFlashMessage(req, message){
+export function setFlashMessage(req, message, type = 'success'){
     req.session.flashMessage = message;
+    req.session.flashType = type;
 }

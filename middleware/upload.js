@@ -28,11 +28,5 @@ const fileFilter = async (req, file, cb) => {
     cb(null, true);
 };
 
-const upload = multer({
-    storage,
-    fileFilter,
-    limits: { fileSize: MAX_SIZE },
-});
-
-
+const upload = multer({ storage, fileFilter, limits: { fileSize: MAX_SIZE }, });
 export default upload;
