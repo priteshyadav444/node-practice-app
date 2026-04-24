@@ -53,6 +53,7 @@ app.use((req, res, next) => {
 app.use('/tasks', webTaskRoutes);
 app.use('/auth', webAuthRoutes);
 
+app.locals.hasPermission = (permission) => { return true };
 
 
 

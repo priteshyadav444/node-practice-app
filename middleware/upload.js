@@ -39,13 +39,24 @@ const fileFilter = async (req, file, cb) => {
 const upload = multer({ storage, fileFilter, limits: { fileSize: MAX_SIZE } });
 
 // Helper to move file from temp to final folder after validation
-export const moveFromTempToFinal = async (file, finalSubfolder = "") => {
-    const destDir = finalSubfolder ? `uploads/${finalSubfolder}` : 'uploads';
-    if (!fs.existsSync(destDir)) fs.mkdirSync(destDir, { recursive: true });
-    const destPath = `${destDir}/${file.filename}`;
-    await fs.promises.rename(file.path, destPath);
-    file.path = destPath;
-    return file;
+export const moveFromTempToFinal = async (file) => {
+    try {
+        const destDir = path.resolve(process.cwd(), 'uploads');
+        if (!fs.existsSync(destDir)) fs.mkdirSync(destDir, { recursive: true });
+
+        const srcPath = path.resolve(file.path);
+        const destPath = path.join(destDir, file.filename);
+
+        // Move (rename) temp file to final uploads directory
+        await fs.promises.rename(srcPath, destPath);
+
+        // Update file.path to absolute final path
+        file.path = destPath;
+        return file;
+    } catch (err) {
+        console.error('moveFromTempToFinal failed:', err && err.message, { filePath: file?.path, filename: file?.filename });
+        throw err;
+    }
 };
 
 export default upload;

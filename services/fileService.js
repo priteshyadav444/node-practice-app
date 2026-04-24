@@ -2,25 +2,16 @@ import fs from 'fs';
 import path from 'path';
 import { Task } from '../models/index.js';
 import { moveFromTempToFinal } from '../middleware/upload.js';
+import * as cacheService from "../services/cacheService.js";
 
 const UPLOAD_DIR = path.resolve(process.cwd(), 'uploads') + path.sep;
-
-// Securely copy a file within uploads directory
-export const copyFileSafe = async (src, dest) => {
-    const resolvedSrc = path.resolve(src);
-    const resolvedDest = path.resolve(dest);
-    if (!resolvedSrc.startsWith(UPLOAD_DIR) || !resolvedDest.startsWith(UPLOAD_DIR)) {
-        throw new Error('Invalid path: must be within uploads directory');
-    }
-    await fs.promises.copyFile(resolvedSrc, resolvedDest);
-};
 
 const safeUnlink = (filePath) => {
     try {
         const resolved = path.resolve(filePath);
         if (!resolved.startsWith(UPLOAD_DIR)) return;
         if (fs.existsSync(resolved)) fs.unlinkSync(resolved);
-    } catch (e) {}
+    } catch (e) { }
 };
 
 export const saveFilesToTask = async (taskId, files) => {
@@ -49,12 +40,14 @@ export const saveFilesToTask = async (taskId, files) => {
         }
 
         // single DB update to attach all files
-        await task.update({ attachment: existing });
+        await Task.update({ attachment: existing }, { where: { id: taskId } });
+        cacheService.clear();
         return added.map(a => a.fileData);
     } catch (err) {
+        console.error('saveFilesToTask error:', err && err.message, err);
         // remove any uploaded files for this operation to avoid partial uploads
         for (const a of added) {
-            try { safeUnlink(a.file.path); } catch (e) {}
+            try { safeUnlink(a.file.path); } catch (e) { }
         }
         throw err;
     }
@@ -65,7 +58,7 @@ export const deleteFilesForTask = async (taskId) => {
     if (!task) return;
     const attachments = Array.isArray(task.attachment) ? task.attachment : [];
     for (const f of attachments) {
-        try { safeUnlink(f.path); } catch (e) {}
+        try { safeUnlink(f.path); } catch (e) { }
     }
 };
 
